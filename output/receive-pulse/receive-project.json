@@ -1,0 +1,134 @@
+{
+  "name": "RECEIVE 按钮缩放",
+  "width": 750,
+  "height": 800,
+  "fps": 24,
+  "duration": 1.5,
+  "background": "transparent",
+  "layers": [
+    {
+      "id": "db16eafb-eaa4-4bb7-b0fe-500a00cd473e",
+      "name": "已补绘无按钮底图 · 抠图 1",
+      "assetId": "596dc047-c171-4909-9156-a522ecf3078a",
+      "x": 0,
+      "y": 0,
+      "width": 750,
+      "height": 800,
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "opacity": 1,
+      "visible": true,
+      "locked": false,
+      "z": 0,
+      "semantic": "element",
+      "keyframes": [],
+      "sequence": [],
+      "sequenceStart": 0
+    },
+    {
+      "id": "46c9ae64-4a87-4c1b-97b7-a46c1eae4f9b",
+      "name": "RECEIVE",
+      "assetId": "dd8ca2fb-f691-485e-9797-8c01ba36f01a",
+      "x": 155,
+      "y": 647,
+      "width": 454,
+      "height": 101,
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "opacity": 1,
+      "visible": true,
+      "locked": false,
+      "z": 1,
+      "semantic": "button",
+      "keyframes": [
+        {
+          "x": 155,
+          "y": 647,
+          "scaleX": 1,
+          "scaleY": 1,
+          "frame": 0,
+          "easing": "easeInOut"
+        },
+        {
+          "x": 136.83999999999997,
+          "y": 642.96,
+          "scaleX": 1.08,
+          "scaleY": 1.08,
+          "frame": 9,
+          "easing": "easeInOut"
+        },
+        {
+          "x": 168.62,
+          "y": 650.03,
+          "scaleX": 0.94,
+          "scaleY": 0.94,
+          "frame": 26,
+          "easing": "easeInOut"
+        },
+        {
+          "x": 155,
+          "y": 647,
+          "scaleX": 1,
+          "scaleY": 1,
+          "frame": 35,
+          "easing": "easeInOut"
+        }
+      ],
+      "sequence": [],
+      "sequenceStart": 0
+    }
+  ],
+  "assets": [
+    {
+      "id": "9be483d8-a997-4221-a7a4-e2d975bd4f8f",
+      "name": "原始参考",
+      "path": "Q:\\Projects\\Codex Animation Builder\\.animation-data\\assets\\1310f4e8-693c-46c9-8ac2-d9f1207abd9f.png",
+      "width": 750,
+      "height": 800
+    },
+    {
+      "id": "596dc047-c171-4909-9156-a522ecf3078a",
+      "name": "已补绘无按钮底图 · 抠图 1",
+      "path": "Q:\\Projects\\Codex Animation Builder\\.animation-data\\assets\\80a95f43-0527-4f66-9c20-32ed6c397e51.png",
+      "width": 750,
+      "height": 800,
+      "sourceBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 750,
+        "height": 800
+      }
+    },
+    {
+      "id": "dd8ca2fb-f691-485e-9797-8c01ba36f01a",
+      "name": "RECEIVE 按钮图集 · 抠图 1",
+      "path": "Q:\\Projects\\Codex Animation Builder\\.animation-data\\assets\\a1681ca8-b1db-4dff-88bc-7064bb98bb16.png",
+      "width": 515,
+      "height": 114,
+      "sourceBounds": {
+        "x": 119,
+        "y": 626,
+        "width": 515,
+        "height": 114
+      }
+    }
+  ],
+  "reference": "9be483d8-a997-4221-a7a4-e2d975bd4f8f",
+  "id": "7c510ec5-f561-4563-b3a6-977631b704a8",
+  "revision": 2,
+  "reviews": [
+    {
+      "round": 1,
+      "score": 0.9,
+      "notes": "已实际打开恢复项目的第0帧PNG。RECEIVE文字、按钮和构图符合要求；底图重绘细节轻微不同。外部背景经Alpha检测透明，按钮独立完整，无旧文案残影。视觉相似程度主观90%。",
+      "snapshotHash": "cf1c63b19900e2bc55c514f4fe8df280ca12a5c08443d3eaac3d6fd3ddb014f5",
+      "revision": 0,
+      "at": "2026-10-30T06:06:15.882Z"
+    }
+  ],
+  "stage": "animate",
+  "frame": 0,
+  "playing": true
+}

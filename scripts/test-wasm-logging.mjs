@@ -1,0 +1,28 @@
+import {fileURLToPath} from 'node:url';
+import {build} from 'esbuild';
+import {spawnSync} from 'node:child_process';
+await build({stdin:{contents:`
+import assert from 'node:assert/strict';
+import {mkdir,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {convertImage} from './server/magick';
+import {framesToGif} from './server/wasm-gif';
+import {readDebugLogs} from './server/debug-log';
+await assert.rejects(convertImage(new Uint8Array([1,2,3]), ['-invalid-option']));
+let logs=readDebugLogs();
+assert.ok(logs.some(e=>e.event==='WASM stderr' && e.details.engine==='ImageMagick'));
+assert.ok(logs.some(e=>e.event==='WASM 调用失败' && e.details.engine==='ImageMagick'));
+const dir=path.resolve('artifacts/wasm-output-fixture');
+await mkdir(path.join(dir,'ffmpeg'),{recursive:true});
+await writeFile(path.join(dir,'package.json'),'{"type":"commonjs"}');
+await writeFile(path.join(dir,'ffmpeg/ffmpeg.js'), 'module.exports=async function(opts){opts.print("fixture stdout");opts.printErr("fixture stderr");throw Error("fixture initialization failure")}');
+await assert.rejects(framesToGif([], {distDir:dir}));
+logs=readDebugLogs();
+assert.ok(logs.some(e=>e.event==='WASM stdout' && e.details.message==='fixture stdout'));
+assert.ok(logs.some(e=>e.event==='WASM stderr' && e.details.message==='fixture stderr'));
+assert.ok(logs.some(e=>e.event==='WASM 调用失败' && e.details.error.includes('fixture initialization failure')));
+process.exitCode = 0;
+console.log('PASS: actual ImageMagick stderr/failure, FFmpeg stdout/stderr/init failure forwarding');
+`,resolveDir:process.cwd(),sourcefile:'wasm-logging-test.ts'},bundle:true,platform:'node',format:'esm',packages:'external',outfile:'artifacts/tests/wasm-logging.mjs'});
+const r=spawnSync(process.execPath,['artifacts/tests/wasm-logging.mjs'],{env:{...process.env,ANIMATION_DATA_DIR:fileURLToPath(new URL('../artifacts/wasm-logging-test',import.meta.url))},stdio:'inherit'});
+process.exit(r.status??1);

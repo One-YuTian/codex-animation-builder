@@ -1,0 +1,19 @@
+import assert from 'node:assert/strict';import {build} from 'esbuild';import {writeFile} from 'node:fs/promises';import path from 'node:path';import sharp from 'sharp';import {chromium} from 'playwright';
+await build({entryPoints:['server/frame.ts'],bundle:true,platform:'node',format:'esm',packages:'external',outfile:'artifacts/tests/shape-frame.mjs'});const {renderFrame}=await import('../artifacts/tests/shape-frame.mjs');
+const image=await sharp({create:{width:40,height:40,channels:4,background:'blue'}}).png().toBuffer();const file=path.resolve('artifacts/tests/shape-source.png');await writeFile(file,image);
+const l={id:'l',name:'mask',assetId:'a',x:12,y:12,width:40,height:40,scaleX:1,scaleY:1,rotation:0,opacity:1,visible:true,locked:false,z:0,semantic:'element',keyframes:[],sequence:[],sequenceStart:0,effect:{type:'sweep',color:'#ffffff',width:.4,angle:0,opacity:1,startFrame:0,endFrame:4,direction:'forward'}};
+const p={id:'test',name:'mask',width:64,height:64,fps:5,duration:1,background:'transparent',revision:0,layers:[l],assets:[{id:'a',name:'a',path:file,width:40,height:40}],reviews:[],stage:'compose',frame:2,playing:false};
+const bundle=await build({stdin:{contents:"import {SceneRenderer} from './src/renderer';import {setHostFileReader} from './src/files';window.TestRenderer=SceneRenderer;setHostFileReader(async()=>new Blob([new Uint8Array(window.fixture)]));",resolveDir:process.cwd()},bundle:true,platform:'browser',format:'iife',write:false});
+const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+try{const page=await browser.newPage();await page.setContent('<div id="root"></div>');await page.evaluate(b=>window.fixture=b,[...image]);await page.addScriptTag({content:bundle.outputFiles[0].text});await page.evaluate(async()=>{window.renderer=new window.TestRenderer(e=>{throw Error(e)});await window.renderer.init(document.getElementById('root'),64,64);});
+ const shapes=[{type:'rect',x:20,y:18,width:20,height:28},{type:'roundedRect',x:18,y:18,width:28,height:28,radius:8},{type:'circle',x:32,y:32,radius:13},{type:'ellipse',x:32,y:32,radiusX:15,radiusY:9},{type:'polygon',points:[{x:18,y:18},{x:46,y:18},{x:46,y:46},{x:32,y:30},{x:18,y:46}]}];let count=0;
+ for(const shape of shapes)for(const inverse of [false,true]){
+  l.shapeMask={space:'canvas',inverse,shape};const cpu=await sharp(await renderFrame(p,2)).ensureAlpha().raw().toBuffer();
+  const bytes=await page.evaluate(async p=>{await window.renderer.load(p);window.renderer.draw(2,true);return [...await window.renderer.png()];},p),gpu=await sharp(Buffer.from(bytes)).ensureAlpha().raw().toBuffer();
+  let bad=0;for(let i=3;i<cpu.length;i+=4)if(Math.abs(cpu[i]-gpu[i])>100)bad++;assert.ok(bad<120,JSON.stringify({shape,inverse,bad}));count++;
+ }
+ l.shapeMask={space:'layer',inverse:false,shape:{type:'polygon',points:[{x:0,y:0},{x:40,y:0},{x:20,y:40}]}};l.rotation=35;l.scaleX=l.scaleY=.8;
+ const cpu=await sharp(await renderFrame(p,2)).ensureAlpha().raw().toBuffer();let bytes=await page.evaluate(async p=>{await window.renderer.load(p);window.renderer.draw(2,true);return [...await window.renderer.png()];},p),gpu=await sharp(Buffer.from(bytes)).ensureAlpha().raw().toBuffer();let bad=0;for(let i=3;i<cpu.length;i+=4)if(Math.abs(cpu[i]-gpu[i])>100)bad++;assert.ok(bad<120,'local transform parity '+bad);
+ l.shapeMask=null;l.rotation=0;l.scaleX=l.scaleY=1;bytes=await page.evaluate(async p=>{await window.renderer.load(p);window.renderer.draw(2,true);return [...await window.renderer.png()];},p);gpu=await sharp(Buffer.from(bytes)).ensureAlpha().raw().toBuffer();assert.equal(gpu[(20*64+20)*4+3],255,'mask must detach');
+ await page.evaluate(()=>window.renderer.destroy());console.log('PASS '+count+' primitive/inverse cases, transformed polygon, sweep clipping and mask removal');
+}finally{await browser.close();}

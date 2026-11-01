@@ -1,0 +1,16 @@
+Built-in Codex imagegen was used; no CLI image generation.
+Final canvas: 750x800, 24 FPS, 72 frames / 3 seconds.
+Project ID: f4f4d8a6-17cc-4ace-a514-10f287d0c9a7
+Generated files: main.png (1227x1281), sprites.png (1121x1403).
+Assets explicitly fitted into original-sized canvas after user requested original resolution.
+Background key: #FF00FF; tolerance 60, feather 2. Final background black.
+Main foreground: source box (20,0,1190,1080), destination (12,0,728,666), z10.
+Button including all lettering: source box (140,1120,840,210), destination (149,650,470,117.5), z20.
+Coin: source box (90,165,205,200), 12 copies at z0..2 with independent falling paths.
+Occlusion reconstruction: remove button fully and repaint payment card lower edge; all original decoration remains part of static main foreground.
+
+Prompt 1:
+Use case: precise-object-edit. Create animation layer 1 from this exact reference. Output EXACTLY 736 x 768 pixels. Keep horse, all ornaments, payment card and Pix logo in precisely the original positions, colors, shape and glossy rendering. Change ONLY amount R$80 to exact text 'R$1000', bold dark navy, fitted within card x160..590 y410..530. Keep 'Pagamento recebido' and 'Via Pix' unchanged. REMOVE entire green bottom button including all text, shadow and glow at x150..615 y645..750. Reconstruct the card bottom edge behind it smoothly. Background everywhere outside subject is perfectly flat solid #FF00FF, no black background and no shadows on the magenta. Do not move or resize subject. This is a full canvas main foreground layer, no button, no extra coins. Keep original decorative coins.
+
+Prompt 2:
+Use case: precise-object-edit. Animation sprite atlas on a completely flat #FF00FF magenta background, exact canvas 1227 x 1281 pixels. Extract/reproduce only the original glossy green rounded button with its exact white text 'DOBRAR AGORA'. Button bounds x260 y1080 width752 height164, same proportions and design as input reference, empty magenta everywhere else. ALSO include one separate gold Chinese coin with square center hole, same embossed glossy style as reference, at x100 y150 width120 height120. Coin and button do not touch. No horse, no payment card, no other decorations. Preserve the button lettering as a single complete object. Flat magenta corners and no cast shadow onto background.

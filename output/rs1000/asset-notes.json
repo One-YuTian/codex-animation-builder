@@ -1,0 +1,27 @@
+{
+  "projectId": "023a79b4-1254-4539-b9de-6dc80db277ce",
+  "generator": "Codex built-in imagegen",
+  "canvas": {"width":750,"height":800,"fps":24,"duration":3},
+  "base": {
+    "file":"base-750x800.png",
+    "prompt":"Preserve the reference horse, coins, lanterns, banknotes, white card and Pagamento recebido header. Remove the complete DOBRAR AGORA button for separate animation and restore the lower card edge. Remove R$80, divider, Pix logo and Via Pix text. Leave a blank clean off-white card interior. Replace exterior empty background with pure #FF00FF for keying. Preserve original layout and coordinates.",
+    "backgroundHex":"#FF00FF",
+    "bounds":{"x":0,"y":0,"width":750,"height":800,"z":0},
+    "resize":"Generated 1214x1295; resized to 750x800 with explicit user consent."
+  },
+  "amount": {
+    "file":"amount-shine-grid.png",
+    "prompt":"Eight consistent frames of R$ 1000, extra bold condensed near-black navy typography. A narrow diagonal silver-white sheen moves left to right inside the letters; first and last frames have no sheen. Identical text alignment and size in all cells. Uniform #FAFAFA background; no labels or grid lines.",
+    "grid":{"columns":4,"rows":2,"count":8,"width":2172,"height":724,"cellWidth":543,"cellHeight":362,"gap":0,"padding":0},
+    "backgroundHex":"#FAFAFA",
+    "bounds":{"x":122,"y":330,"width":506,"height":337.3333333333,"z":1},
+    "sequence":{"startFrame":0,"endFrame":47,"holdLastThroughFrame":71}
+  },
+  "button": {
+    "source":"Original complete DOBRAR AGORA button reused from the existing editor assets.",
+    "bounds":{"x":155,"y":647,"width":454,"height":101,"z":2},
+    "scaleRange":[0.94,1.08],
+    "anchor":"center"
+  },
+  "export":"Use the editor Export button; no animation export was started by the agent."
+}

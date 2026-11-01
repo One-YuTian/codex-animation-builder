@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import {Client} from '@modelcontextprotocol/sdk/client/index.js';
+import {StdioClientTransport} from '@modelcontextprotocol/sdk/client/stdio.js';
+import {mkdtemp,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import sharp from 'sharp';
+import {chromium} from 'playwright';
+const root=await mkdtemp(path.resolve('artifacts/optimization-smoke-'));
+const c=new Client({name:'optimization-smoke',version:'1'});
+await c.connect(new StdioClientTransport({command:'node',args:['dist/server.js'],cwd:process.cwd(),env:{...process.env,ANIMATION_DATA_DIR:root}}));
+let browser;
+try {
+ const list=await c.listTools();for(const name of ['prepare_regions','process_layer','batch_layers'])assert.ok(list.tools.some(t=>t.name==='animation_'+name));
+ async function call(op,args={}){const r=await c.callTool({name:'animation_'+op,arguments:args});assert.ok(!r.isError,JSON.stringify(r.content));assert.ok(!JSON.stringify(r.structuredContent).includes('debugLogs'));assert.ok(!JSON.stringify(r.structuredContent).includes('base64'));return r;}
+ const opened=await call('open_editor',{reset:true});assert.equal(opened.structuredContent.project,null);
+ const created=await call('create',{name:'优化验证',width:200,height:160});const id=created.structuredContent.project.id;
+ const file=path.join(root,'synthetic.png');await sharp({create:{width:200,height:160,channels:4,background:'#BF56A5'}}).composite([{input:Buffer.from('<svg width="200" height="160"><path d="M58 48H106V96H58Z M72 62V82H92V62Z" fill="#0055ff" fill-rule="evenodd"/></svg>')}]).png().toFile(file);
+ const ref=await call('import_image',{projectId:id,path:file,name:'reference',reference:true});
+ const prepared=await call('prepare_regions',{projectId:id,assetId:ref.structuredContent.asset.id,backgroundColor:'#BF56A5',regions:[{name:'ring',x:50,y:40,width:64,height:64}]});
+ const layer=await call('process_layer',{projectId:id,path:file,name:'透明孔洞',preparationId:prepared.structuredContent.regions[0].preparationId,backgroundColor:'#BF56A5'});
+ assert.equal((await call('current'))._meta.appState.project.layers.length,0);
+ const second=await call('process_layer',{projectId:id,path:file,name:'第二层统一导入',preparationId:prepared.structuredContent.regions[0].preparationId,z:2});
+ assert.equal((await call('current'))._meta.appState.project.layers.length,0);
+ const committed=await call('batch_layers',{projectId:id,add:[layer.structuredContent.pendingLayer,second.structuredContent.pendingLayer]});
+ const layerId=committed.structuredContent.createdLayerIds[0];
+ await call("set_mask",{projectId:id,layerIds:[layerId],mask:{space:"canvas",shape:{type:"roundedRect",x:50,y:40,width:64,height:64,radius:8}}});
+ const summary=await call('current');assert.equal(summary.structuredContent.project.layers,undefined);assert.equal(summary._meta.appState.project.layers.length,2);
+ const full=await call('get',{projectId:id,detail:'full'});assert.equal(full.structuredContent.project.layers.length,2);
+ const modelBytes=JSON.stringify(summary.structuredContent).length,uiBytes=JSON.stringify(summary._meta.appState).length;
+ const preview=await call('snapshot',{projectId:id,frame:0});assert.equal(preview.structuredContent.layers,undefined);
+ await call('review',{projectId:id,score:.95,notes:'synthetic reference square ring matches; alpha counter checked',snapshotHash:preview.structuredContent.snapshotHash});
+ const rev=(await call('get',{projectId:id})).structuredContent.project.revision;
+ await call('batch_layers',{projectId:id,expectedRevision:rev,update:[{layerId,patch:{keyframes:[{frame:0,x:58},{frame:71,x:70}]}}]});
+ browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+ const page=await browser.newPage({viewport:{width:1280,height:800}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(opened._meta.runtime.origin);await page.getByText('透明孔洞',{exact:true}).first().waitFor();await page.screenshot({path:'artifacts/optimization-editor.png'});assert.deepEqual(errors,[]);
+ await page.getByText('第二层统一导入',{exact:true}).first().waitFor();
+ await page.screenshot({path:'artifacts/batched-visual-center-editor.png'});
+ assert.deepEqual(errors,[]);
+ await writeFile('artifacts/optimization-smoke-report.json',JSON.stringify({tools:list.tools.length,version:'0.7.2',modelBytes,uiBytes,summaryReduction:1-modelBytes/uiBytes,tests:['discovery','compact model result','full app metadata','explicit full project','process native alpha','snapshot/review','atomic batch','editor rendering','all layers staged then batch rendering','MCP shape mask'],snapshot:preview.structuredContent.file},null,2));
+ console.log(JSON.stringify({tools:list.tools.length,modelBytes,uiBytes,uiErrors:errors.length,result:'passed'}));
+}finally{await browser?.close();await c.close();}
