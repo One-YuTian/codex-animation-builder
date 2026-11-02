@@ -4772,12 +4772,12 @@ function maskContains(m, x, y) {
 // src/model.ts
 var easingSchema = external_exports.union([
   external_exports.enum(["linear", "easeIn", "easeOut", "easeInOut"]),
-  external_exports.tuple([
-    external_exports.number().min(0).max(1),
-    external_exports.number(),
-    external_exports.number().min(0).max(1),
-    external_exports.number()
-  ])
+  // Homogeneous items keep MCP tool schemas compatible with hosts that
+  // cannot convert JSON Schema tuple-style items into model tool arguments.
+  external_exports.array(external_exports.number()).length(4).refine(
+    (v) => v[0] >= 0 && v[0] <= 1 && v[2] >= 0 && v[2] <= 1,
+    { message: "Bezier x control points must be between 0 and 1" }
+  ).transform((v) => [v[0], v[1], v[2], v[3]])
 ]);
 var poseSchema = external_exports.object({
   x: external_exports.number(),
