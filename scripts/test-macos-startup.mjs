@@ -5,9 +5,12 @@ import {mkdtemp,rm} from 'node:fs/promises';
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {StdioClientTransport} from '@modelcontextprotocol/sdk/client/stdio.js';
 const data=await mkdtemp(path.join(os.tmpdir(),'animation-mac-'));
+const manifest=JSON.parse(await (await import('node:fs/promises')).readFile('artifacts/beta/mcp.json','utf8'));
+const config=manifest.mcpServers['animation-builder'];
+assert.equal(config.command,'sh');
 const client=new Client({name:'mac-startup-test',version:'1'});
 try {
- await client.connect(new StdioClientTransport({command:'/bin/sh',args:[path.resolve('artifacts/beta/scripts/launch.sh')],cwd:'/tmp',env:{HOME:os.homedir(),PATH:'/usr/bin:/bin',ANIMATION_DATA_DIR:data}}));
+ await client.connect(new StdioClientTransport({command:config.command,args:config.args.map(arg=>arg.replace('${PLUGIN_ROOT}',path.resolve('artifacts/beta'))),cwd:'/tmp',env:{HOME:os.homedir(),PATH:'/usr/bin:/bin',ANIMATION_DATA_DIR:data}}));
  const tools=(await client.listTools()).tools;
  assert(tools.some(t=>t.name==='animation_open_editor'));
  assert(tools.some(t=>t.name==='animation_create'));

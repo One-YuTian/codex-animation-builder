@@ -1,8 +1,12 @@
 # Codex Animation Builder
 
+## 0.7.5 Codex 宿主 MCP 发现修复
+
+启动命令使用 `sh`；当前 Codex 宿主不会将绝对系统路径 `/bin/sh` 注册为插件 MCP 服务。启动器脚本参数仍通过 PLUGIN_ROOT 定位。回归验证同时覆盖宿主 plugin/read 的 mcpServers 与实际 MCP 工具调用。
+
 ## 0.7.4 macOS 启动修复
 
-macOS/Linux 默认通过 `/bin/sh scripts/launch.sh` 启动，支持 PATH、Homebrew、Codex 内置 Node、NVM 和 Volta，要求 Node >=20.19。可用 ANIMATION_NODE_BINARY 指定可执行文件。启动器不下载或安装程序，stdout 仅用于 MCP。
+macOS/Linux 默认通过 `sh scripts/launch.sh` 启动，支持 PATH、Homebrew、Codex 内置 Node、NVM 和 Volta，要求 Node >=20.19。可用 ANIMATION_NODE_BINARY 指定可执行文件。启动器不下载或安装程序，stdout 仅用于 MCP。
 
 独立 beta 构建：`pnpm build` 后执行 `node scripts/build-beta.mjs`，产物位于 `artifacts/beta`。
 

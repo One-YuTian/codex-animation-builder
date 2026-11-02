@@ -3,7 +3,7 @@
   "mcpServers": {
     "animation-builder": {
       "type": "stdio",
-      "command": "/bin/sh",
+      "command": "sh",
       "args": [
         "${PLUGIN_ROOT}/scripts/launch.sh"
       ],
