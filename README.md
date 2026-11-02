@@ -1,5 +1,13 @@
 # Codex Animation Builder
 
+## 0.7.7 导出面板层级修复
+
+时间轴建立独立堆叠上下文，防止关键帧标记越过时间轴遮挡导出弹窗。浏览器回归测试会先移除隔离以复现遮挡，再确认修复后弹窗像素不受底层标记影响。
+
+## 0.7.6 批量图层和关键帧工具兼容
+
+贝塞尔缓动参数改用四项数值数组，避免元组形式的 JSON Schema items 导致宿主工具解析失败，保留长度和控制点范围校验。安装验证检查 animation_batch_layers、animation_keyframes 以及全部工具的 Schema 兼容性。
+
 ## 0.7.5 Codex 宿主 MCP 发现修复
 
 启动命令使用 `sh`；当前 Codex 宿主不会将绝对系统路径 `/bin/sh` 注册为插件 MCP 服务。启动器脚本参数仍通过 PLUGIN_ROOT 定位。回归验证同时覆盖宿主 plugin/read 的 mcpServers 与实际 MCP 工具调用。

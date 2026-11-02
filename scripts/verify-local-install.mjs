@@ -29,7 +29,19 @@ try {
   await client.connect(transport);
   const { tools } = await client.listTools();
   const open = tools.find((t) => t.name === "animation_open_editor");
-  if (!open || ![31,34,35].includes(tools.length)) throw Error("Unexpected tools");
+  if (!open || tools.length < 35) throw Error("Unexpected tools");
+  for (const name of ["animation_batch_layers", "animation_keyframes"]) {
+    if (!tools.some((tool) => tool.name === name)) throw Error(`Missing ${name}`);
+  }
+  const checkSchema = (value) => {
+    if (!value || typeof value !== "object") return;
+    if (Array.isArray(value.items)) throw Error("Host-incompatible tuple items");
+    Object.values(value).forEach((child) => {
+      if (Array.isArray(child)) child.forEach(checkSchema);
+      else checkSchema(child);
+    });
+  };
+  tools.forEach((tool) => checkSchema(tool.inputSchema));
   const result = await client.callTool({
     name: "animation_list",
     arguments: {},
@@ -46,6 +58,7 @@ try {
       {
         server: "connected",
         tools: tools.length,
+        batchAndKeyframes: "discovered; schemas compatible",
         skills,
         entrypoints: open._meta["openai/ui"].entrypoints,
         displayModes: ui.contents[0]._meta["openai/ui"].availableDisplayModes,

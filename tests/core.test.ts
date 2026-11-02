@@ -5,6 +5,9 @@ import os from "node:os";
 import path from "node:path";
 import sharp from "sharp";
 import { createGateway } from "../server/gateway";
+import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
+import { easingSchema } from "../src/model";
+import { operations } from "../server/core";
 import { Store, visualHash } from "../server/core";
 import {
   keyImage,
@@ -2021,4 +2024,22 @@ test("gifsicle duplicate frame merge does not force O1 and optimization errors p
     onLog: () => {},
   });
   assert.deepEqual(Buffer.from(fallback), Buffer.from(original));
+});
+
+
+test("MCP animation schemas use homogeneous array items for host discovery", () => {
+  const visit = (node: unknown) => {
+    if (!node || typeof node !== "object") return;
+    const value = node as Record<string, unknown>;
+    assert.equal(Array.isArray(value.items), false, "tuple items are unsupported by model tool conversion");
+    for (const child of Object.values(value)) {
+      if (Array.isArray(child)) child.forEach(visit);
+      else visit(child);
+    }
+  };
+  for (const schema of Object.values(operations)) visit(toJsonSchemaCompat(schema));
+  assert.deepEqual(easingSchema.parse([0.25, -0.5, 0.75, 1.5]), [0.25, -0.5, 0.75, 1.5]);
+  for (const invalid of [[0, 1, 1], [0, 1, 1, 1, 1], [-0.1, 0, 1, 1], [0, 0, 1.1, 1]]) {
+    assert.equal(easingSchema.safeParse(invalid).success, false);
+  }
 });

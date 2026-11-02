@@ -3,12 +3,13 @@ import { z } from "zod";
 
 export const easingSchema = z.union([
   z.enum(["linear", "easeIn", "easeOut", "easeInOut"]),
-  z.tuple([
-    z.number().min(0).max(1),
-    z.number(),
-    z.number().min(0).max(1),
-    z.number(),
-  ]),
+  // Homogeneous items keep MCP tool schemas compatible with hosts that
+  // cannot convert JSON Schema tuple-style items into model tool arguments.
+  z.array(z.number())
+    .length(4)
+    .refine((v) => v[0] >= 0 && v[0] <= 1 && v[2] >= 0 && v[2] <= 1,
+      { message: "Bezier x control points must be between 0 and 1" })
+    .transform((v): [number, number, number, number] => [v[0], v[1], v[2], v[3]]),
 ]);
 
 export type Easing = z.infer<typeof easingSchema>;

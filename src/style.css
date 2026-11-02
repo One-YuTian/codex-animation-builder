@@ -291,6 +291,8 @@ svg {
   overflow-wrap: anywhere;
 }
 .timeline {
+  /* Keep keyframe z-index local so it cannot paint over portaled dialogs. */
+  isolation: isolate;
   height: 242px;
   min-height: 160px;
   flex-shrink: 0;
