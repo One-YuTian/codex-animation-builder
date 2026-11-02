@@ -1,4 +1,4 @@
-import { createRequire as __bundleCreateRequire } from 'node:module'; const require = __bundleCreateRequire(import.meta.url);
+import { createRequire as bundleRequire } from 'node:module'; globalThis.require = bundleRequire(import.meta.url);
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -15573,7 +15573,7 @@ var require_fast_uri = __commonJS({
         throw new Error(MALFORMED_HOST_ERROR);
       }
       canonicalizeHost(resolved, options || {}, resolvedSchemeHandler, resolvedHostIsIP);
-      const encodedASCIIHost = resolvedHost && resolvedHost.indexOf("%") !== -1 && !new RegExp("\\P{ASCII}", "u").test(resolvedHost);
+      const encodedASCIIHost = resolvedHost && resolvedHost.indexOf("%") !== -1 && !/\P{ASCII}/u.test(resolvedHost);
       if (resolved.error && !encodedASCIIHost) {
         throw new Error(resolved.error);
       }
@@ -18929,13 +18929,9 @@ import fs from "node:fs";
 import path2 from "node:path";
 import { fileURLToPath } from "node:url";
 function getWasmToolsDistDir() {
-  for (const candidate of [
-    fileURLToPath(new URL("./wasm-tools", import.meta.url)),
-    path2.resolve("server/wasm-tools/dist"),
-    path2.resolve("dist/wasm-tools")
-  ]) {
-    if (fs.existsSync(path2.join(candidate, "imagemagick/magick.cjs")))
-      return candidate;
+  for (const relative of ["./wasm-tools", "./wasm-tools/dist", "../server/wasm-tools/dist"]) {
+    const candidate = fileURLToPath(new URL(relative, import.meta.url));
+    if (fs.existsSync(path2.join(candidate, "imagemagick/magick.cjs"))) return candidate;
   }
   throw Error("\u672A\u627E\u5230\u63D2\u4EF6\u5185\u7F6E WASM \u5DE5\u5177\u76EE\u5F55");
 }
@@ -18952,7 +18948,7 @@ import path3 from "node:path";
 async function moduleCore() {
   if (!modulePromise) {
     const dir = path3.join(getWasmToolsDistDir(), "imagemagick");
-    const factory = wasmRequire(path3.join(dir, "magick.cjs"));
+    const factory = require2(path3.join(dir, "magick.cjs"));
     debugLog("WASM \u521D\u59CB\u5316", { engine: "ImageMagick", module: path3.join(dir, "magick.cjs") });
     modulePromise = factory({
       noInitialRun: true,
@@ -19070,13 +19066,13 @@ async function composeImages(width, height, background, overlays) {
   args.push("PNG32:/output.png");
   return command(files, args, "/output.png");
 }
-var wasmRequire, modulePromise, queue;
+var require2, modulePromise, queue;
 var init_magick = __esm({
   "server/magick.ts"() {
     "use strict";
-    init_debug_log();
     init_wasm_paths();
-    wasmRequire = createRequire(import.meta.url);
+    init_debug_log();
+    require2 = createRequire(import.meta.url);
     queue = Promise.resolve();
   }
 });
@@ -29429,7 +29425,7 @@ var StdioServerTransport = class {
   }
 };
 
-// node_modules/.pnpm/@modelcontextprotocol+ext-a_c61fe5ca038c925925cfe83dac7e9476/node_modules/@modelcontextprotocol/ext-apps/dist/src/server/index.js
+// node_modules/.pnpm/@modelcontextprotocol+ext-apps@1.7.5_@modelcontextprotocol+sdk@1.32.2_zod@3.25.76__reac_c61fe5ca038c925925cfe83dac7e9476/node_modules/@modelcontextprotocol/ext-apps/dist/src/server/index.js
 init_v4();
 var r = ((Z) => typeof __require < "u" ? __require : typeof Proxy < "u" ? new Proxy(Z, { get: ($, J) => (typeof __require < "u" ? __require : $)[J] }) : Z)(function(Z) {
   if (typeof __require < "u") return __require.apply(this, arguments);

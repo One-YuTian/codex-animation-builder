@@ -1,4 +1,4 @@
-import { createRequire as __bundleCreateRequire } from 'node:module'; const require = __bundleCreateRequire(import.meta.url);
+import { createRequire as bundleRequire } from 'node:module'; globalThis.require = bundleRequire(import.meta.url);
 var __defProp = Object.defineProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -48,35 +48,29 @@ import { mkdir as mkdirAsync, writeFile as writeAsync } from "node:fs/promises";
 import { once } from "node:events";
 import path5 from "node:path";
 
-// server/magick.ts
-import { createRequire } from "node:module";
-import { readFile } from "node:fs/promises";
-import path3 from "node:path";
-
 // server/wasm-paths.ts
 import fs from "node:fs";
 import path2 from "node:path";
 import { fileURLToPath } from "node:url";
 function getWasmToolsDistDir() {
-  for (const candidate of [
-    fileURLToPath(new URL("./wasm-tools", import.meta.url)),
-    path2.resolve("server/wasm-tools/dist"),
-    path2.resolve("dist/wasm-tools")
-  ]) {
-    if (fs.existsSync(path2.join(candidate, "imagemagick/magick.cjs")))
-      return candidate;
+  for (const relative of ["./wasm-tools", "./wasm-tools/dist", "../server/wasm-tools/dist"]) {
+    const candidate = fileURLToPath(new URL(relative, import.meta.url));
+    if (fs.existsSync(path2.join(candidate, "imagemagick/magick.cjs"))) return candidate;
   }
   throw Error("\u672A\u627E\u5230\u63D2\u4EF6\u5185\u7F6E WASM \u5DE5\u5177\u76EE\u5F55");
 }
 
 // server/magick.ts
-var wasmRequire = createRequire(import.meta.url);
+import { createRequire } from "node:module";
+import { readFile } from "node:fs/promises";
+import path3 from "node:path";
+var require2 = createRequire(import.meta.url);
 var modulePromise;
 var queue = Promise.resolve();
 async function moduleCore() {
   if (!modulePromise) {
     const dir = path3.join(getWasmToolsDistDir(), "imagemagick");
-    const factory = wasmRequire(path3.join(dir, "magick.cjs"));
+    const factory = require2(path3.join(dir, "magick.cjs"));
     debugLog("WASM \u521D\u59CB\u5316", { engine: "ImageMagick", module: path3.join(dir, "magick.cjs") });
     modulePromise = factory({
       noInitialRun: true,
@@ -213,12 +207,12 @@ async function encodeGif(frames2, fps, onLog) {
 
 // node_modules/.pnpm/fflate@0.8.3/node_modules/fflate/esm/index.mjs
 import { createRequire as createRequire2 } from "module";
-var require2 = createRequire2("/");
+var require3 = createRequire2("/");
 var _a;
 var Worker;
 var isMarkedAsUntransferable;
 try {
-  _a = require2("worker_threads"), Worker = _a.Worker, isMarkedAsUntransferable = _a.isMarkedAsUntransferable;
+  _a = require3("worker_threads"), Worker = _a.Worker, isMarkedAsUntransferable = _a.isMarkedAsUntransferable;
 } catch (e) {
 }
 var u8 = Uint8Array;
@@ -5124,7 +5118,7 @@ function selectSmallerGif(original, candidate) {
 import path4 from "node:path";
 import fs2 from "node:fs";
 import { createRequire as createRequire3 } from "node:module";
-var wasmRequire2 = createRequire3(import.meta.url);
+var require4 = createRequire3(import.meta.url);
 async function framesToGifImpl(frameBuffers, options = {}) {
   const fps = options.fps ?? 30;
   const color = options.transparencyColor ?? "ffffff";
@@ -5143,7 +5137,7 @@ async function framesToGifImpl(frameBuffers, options = {}) {
 async function compressGifImpl(gifBuffer, options = {}) {
   const dist = options.distDir ?? getWasmToolsDistDir();
   const gifsicleJsPath = path4.join(dist, "gifsicle", "gifsicle.js");
-  const createGifsicleCore = wasmRequire2(gifsicleJsPath);
+  const createGifsicleCore = require4(gifsicleJsPath);
   if (typeof createGifsicleCore !== "function")
     throw Error(`Gifsicle \u6A21\u5757\u672A\u5BFC\u51FA\u5DE5\u5382\u51FD\u6570: ${gifsicleJsPath}`);
   const core = await createGifsicleCore({
@@ -5269,7 +5263,7 @@ async function compressGif(bytes, options = {}) {
 async function runFFmpegFrames(frames2, encoderArgs, filename, options) {
   const dist = options.distDir ?? getWasmToolsDistDir();
   const directory = path4.join(dist, "ffmpeg");
-  const factory = wasmRequire2(path4.join(directory, "ffmpeg.js"));
+  const factory = require4(path4.join(directory, "ffmpeg.js"));
   const emit = (type, message) => options.onLog?.("WASM " + type, { engine: "ffmpeg", message });
   const errors = [];
   const wasmPath = path4.join(directory, "ffmpeg-core.wasm");
