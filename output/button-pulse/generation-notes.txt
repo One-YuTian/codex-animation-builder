@@ -1,9 +1,0 @@
-Built-in Codex image_gen was used for both layers.
-
-Background prompt: Remove only the bottom green DOBRAR AGORA button. Restore the white payment card bottom edge behind it and flat black outside it. Preserve the character, coins, decorations, text Pagamento recebido / R$80 / Via Pix, positions, colors and proportions. Opaque black background.
-
-Button prompt: Extract only the glossy green rounded button including its exact DOBRAR AGORA lettering and shadows. Preserve its original position, proportions and colors on a full canvas with solid #FF00FF background. No other elements.
-
-Generated images had larger dimensions. User explicitly approved adjustment to the original 750x800 canvas; both were resized accordingly. Button magenta was removed by animation_key_image and the entire button was kept as one semantic layer.
-
-Animation: 24 FPS, 36 frames, 1.5 seconds. Button center remains fixed. Frame 0: 100%; frame 9: 108%; frame 26: 94%; frame 35: 100%. Smooth easeInOut interpolation. Other artwork is static. Generated artwork has minor differences from the original reference.

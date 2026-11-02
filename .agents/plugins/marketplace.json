@@ -1,0 +1,20 @@
+{
+  "name": "codex-animation-local",
+  "interface": {
+    "displayName": "Codex Animation Builder 本地构建"
+  },
+  "plugins": [
+    {
+      "name": "codex-animation-builder",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

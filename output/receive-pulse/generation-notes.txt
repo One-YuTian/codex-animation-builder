@@ -1,6 +1,0 @@
-Tool: built-in Codex image_gen.
-Prompt: Isolate ONLY the green glossy rounded bottom call-to-action button, replacing DOBRAR AGORA with exactly RECEIVE, uppercase bold white chunky lettering with dark green shadow, centered. Preserve green button shape, bevel and highlights. Full 750x800 canvas; original button location approximately x155 y647 width454 height101. Every other pixel uniform opaque #FF00FF for color keying. Remove character, coins, card and other text. One inseparable button including RECEIVE. No transparency in generated atlas.
-
-The previously generated, inpainted background from this chat was reused. Generated atlas was explicitly resized to 750x800 under the user's prior authorization, then keyed and split by Animation Builder. The button layer was aligned to (155,647,454,101). The exterior background was keyed to transparent; payment card and artwork remain opaque.
-
-Animation: 24 FPS, 36 frames, 1.5 seconds; 100%,108%,94%,100% at frames 0,9,26,35, easeInOut. Button center fixed. All image imports and snapshots used absolute paths, without base64 transfer. Generated details have minor differences from the reference.

@@ -4,7 +4,9 @@
     "animation-builder": {
       "type": "stdio",
       "command": "node",
-      "args": ["${PLUGIN_ROOT}/dist/server.js"],
+      "args": [
+        "${PLUGIN_ROOT}/run.mjs"
+      ],
       "cwd": "${PLUGIN_ROOT}"
     }
   }
