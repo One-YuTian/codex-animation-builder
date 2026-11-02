@@ -1,3 +1,4 @@
+import { cp } from "node:fs/promises";
 import { build } from "esbuild";
 import { spawnSync } from "node:child_process";
 await build({
@@ -16,6 +17,7 @@ await build({
   packages: "external",
   outfile: "artifacts/tests/export-worker.js",
 });
+await cp("server/wasm-tools/dist", "artifacts/tests/wasm-tools", {recursive:true});
 const result = spawnSync(
   process.execPath,
   ["--test", "artifacts/tests/core.test.mjs"],

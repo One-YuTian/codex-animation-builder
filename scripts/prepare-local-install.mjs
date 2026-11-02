@@ -25,7 +25,7 @@ const mcp = JSON.parse(
 );
 mcp.mcpServers["animation-builder"] = {
   type: "stdio",
-  command: "node",
+  command: process.execPath,
   args: ["${PLUGIN_ROOT}/scripts/local-runtime.mjs"],
   cwd: "${PLUGIN_ROOT}",
 };

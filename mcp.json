@@ -3,8 +3,10 @@
   "mcpServers": {
     "animation-builder": {
       "type": "stdio",
-      "command": "node",
-      "args": ["${PLUGIN_ROOT}/dist/server.js"],
+      "command": "/bin/sh",
+      "args": [
+        "${PLUGIN_ROOT}/scripts/launch.sh"
+      ],
       "cwd": "${PLUGIN_ROOT}"
     }
   }

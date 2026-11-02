@@ -1,5 +1,16 @@
 # Codex Animation Builder
 
+## 0.7.4 macOS 启动修复
+
+macOS/Linux 默认通过 `/bin/sh scripts/launch.sh` 启动，支持 PATH、Homebrew、Codex 内置 Node、NVM 和 Volta，要求 Node >=20.19。可用 ANIMATION_NODE_BINARY 指定可执行文件。启动器不下载或安装程序，stdout 仅用于 MCP。
+
+独立 beta 构建：`pnpm build` 后执行 `node scripts/build-beta.mjs`，产物位于 `artifacts/beta`。
+
+Windows 安装前将 `mcp.windows.json` 复制为 `mcp.json`（仍通过 node 启动）。本地开发安装脚本使用当前 Node 的绝对路径。
+
+更新插件后重新连接或重启 Codex，旧会话无法自动替换启动失败的 MCP 连接。
+
+
 ## 0.7.3 金额扫光规划（Skill更新）
 
 animation-planning识别货币符号/单位及价格奖励上下文中的金额，将局部金额扫光列为候选；不强制添加，不因金额自动升档，不覆盖明确动作要求，保留数值与可读性。本次仅更新Skill和发行元数据，运行时仍为0.7.2。

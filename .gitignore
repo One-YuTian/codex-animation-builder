@@ -4,3 +4,7 @@ dist/
 artifacts/
 .browsers/
 *.log
+
+.pnpm-store/
+!server/wasm-tools/dist/
+!server/wasm-tools/dist/**

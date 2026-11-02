@@ -1,3 +1,4 @@
+import { getWasmToolsDistDir } from "./wasm-paths";
 import { debugLog } from "./debug-log";
 import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
@@ -7,7 +8,7 @@ let modulePromise: Promise<any> | undefined;
 let queue: Promise<unknown> = Promise.resolve();
 async function moduleCore() {
   if (!modulePromise) {
-    const dir = path.resolve("server/wasm-tools/dist/imagemagick");
+    const dir = path.join(getWasmToolsDistDir(), "imagemagick");
     const factory = require(path.join(dir, "magick.cjs"));
     debugLog("WASM 初始化", { engine: "ImageMagick", module: path.join(dir, "magick.cjs") });
     modulePromise = factory({

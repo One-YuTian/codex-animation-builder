@@ -4,6 +4,7 @@ import path from "node:path";
 const files = [
   "plugin.json",
   "mcp.json",
+  "mcp.windows.json",
   "package.json",
   "pnpm-lock.yaml",
   "pnpm-workspace.yaml",

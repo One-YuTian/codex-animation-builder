@@ -6,14 +6,8 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 
-export function getWasmToolsDistDir(): string {
-  // Bundled Emscripten glue uses CommonJS, scoped by its own package.json.
-  for (const directory of ["server/wasm-tools/dist", "dist/wasm-tools/dist"]) {
-    const candidate = path.resolve(directory);
-    if (fs.existsSync(candidate)) return candidate;
-  }
-  throw Error("未找到插件内置 WASM 工具目录");
-}
+import { getWasmToolsDistDir } from "./wasm-paths";
+export { getWasmToolsDistDir } from "./wasm-paths";
 
 export type FramesToGifOptions = {
   onLog?: (event: string, details: unknown) => void;
