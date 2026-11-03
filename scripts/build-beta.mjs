@@ -1,8 +1,7 @@
 import { build } from "esbuild";
 import { cp, mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import path from "node:path";
-// A stdio manifest has one executable token, not per-OS command overrides.
-// Keep the macOS launcher intact and ship a separate native Windows package.
+// All platforms use the same Node.js entrypoint and manifest.
 const args = process.argv.slice(2);
 const platformArg = args.find((arg) => arg.startsWith("--platform="));
 const platform = platformArg?.split("=")[1] ?? "darwin";
@@ -13,6 +12,10 @@ const out = path.resolve(
     (platform === "win32" ? "artifacts/beta-windows" : "artifacts/beta"),
 );
 await mkdir(out, { recursive: true });
+// Remove obsolete platform launchers when rebuilding an existing output folder.
+for (const file of ["scripts/launch.sh", "scripts/launch.ps1"]) {
+  await rm(path.join(out, file), { force: true });
+}
 for (const entry of ["server", "export-worker"]) {
   await build({
     entryPoints: [
@@ -35,8 +38,7 @@ for (const file of [
   "mcp.windows.json",
   "README.md",
   "skills",
-  "scripts/launch.sh",
-  "scripts/launch.ps1",
+  "run.mjs",
 ]) {
   await mkdir(path.dirname(path.join(out, file)), { recursive: true });
   await cp(file, path.join(out, file), { recursive: true });
@@ -63,54 +65,11 @@ await writeFile(
   ) + "\n",
 );
 await writeFile(
-  path.join(out, "run.mjs"),
-  `import path from 'node:path';
-import os from 'node:os';
-process.env.ANIMATION_DATA_DIR ??= path.join(process.env.LOCALAPPDATA ?? path.join(os.homedir(), '.local', 'share'), 'codex-animation-builder', '.animation-data');
-await import('./server.js');
-`,
-);
-const windows = JSON.parse(
-  await readFile(path.join(out, "mcp.windows.json"), "utf8"),
-);
-await writeFile(
-  path.join(out, "mcp.windows.json"),
-  JSON.stringify(windows, null, 2) + "\n",
-);
-if (platform === "win32") {
-  // The installed manifest must already be runnable; users must not have to
-  // replace a file in Codex's versioned plugin cache after installation.
-  await writeFile(
-    path.join(out, "mcp.json"),
-    JSON.stringify(windows, null, 2) + "\n",
-  );
-  await mkdir(path.join(out, ".agents/plugins"), { recursive: true });
-  await writeFile(
-    path.join(out, ".agents/plugins/marketplace.json"),
-    JSON.stringify(
-      {
-        name: "codex-animation-windows",
-        interface: { displayName: "Codex Animation Builder Windows" },
-        plugins: [
-          {
-            name: pkg.name,
-            source: { source: "local", path: "./" },
-            policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" },
-            category: "Productivity",
-          },
-        ],
-      },
-      null,
-      2,
-    ) + "\n",
-  );
-}
-await writeFile(
   path.join(out, "build-manifest.json"),
   JSON.stringify(
     {
       version: pkg.version,
-      platform,
+      platform: "any",
       runtime: "node>=20.19",
       bundledDependencies: true,
     },

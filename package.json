@@ -1,13 +1,13 @@
 {
   "name": "codex-animation-builder",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.6.0",
   "scripts": {
     "build": "tsc --noEmit && vite build && esbuild server/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server.js && esbuild server/export-worker.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/export-worker.js",
-    "start": "node dist/server.js",
-    "preview": "node dist/server.js --web",
+    "start": "node run.mjs",
+    "preview": "node run.mjs --web",
     "test": "node scripts/test.mjs",
     "check": "tsc --noEmit",
     "dev": "pnpm build && pnpm preview",

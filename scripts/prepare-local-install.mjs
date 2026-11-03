@@ -21,24 +21,14 @@ await cp(path.join(sourceRoot, "skills"), path.join(pluginRoot, "skills"), {
   recursive: true,
 });
 const mcp = JSON.parse(
-  await readFile(
-    path.join(
-      sourceRoot,
-      process.platform === "win32" ? "mcp.windows.json" : "mcp.json",
-    ),
-    "utf8",
-  ),
+  await readFile(path.join(sourceRoot, "mcp.json"), "utf8"),
 );
 await mkdir(path.join(pluginRoot, "scripts"), { recursive: true });
-for (const launcher of ["launch.sh", "launch.ps1"]) {
-  await cp(
-    path.join(sourceRoot, "scripts", launcher),
-    path.join(pluginRoot, "scripts", launcher),
-  );
-}
+await cp(path.join(sourceRoot, "run.mjs"), path.join(pluginRoot, "run.mjs"));
+await mkdir(path.join(pluginRoot, "dist"), { recursive: true });
 await writeFile(
-  path.join(pluginRoot, "run.mjs"),
-  "await import('./scripts/local-runtime.mjs');\n",
+  path.join(pluginRoot, "dist/server.js"),
+  "await import('../scripts/local-runtime.mjs');\n",
 );
 await writeFile(
   path.join(pluginRoot, "scripts", "runtime.json"),

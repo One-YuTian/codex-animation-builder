@@ -3,6 +3,8 @@ import { zipSync } from "fflate";
 import path from "node:path";
 const files = [
   "plugin.json",
+  "run.mjs",
+  ".gitattributes",
   "mcp.json",
   "mcp.windows.json",
   "package.json",

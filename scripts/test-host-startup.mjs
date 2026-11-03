@@ -8,7 +8,7 @@ import os from "node:os";
 const fixture = path.resolve("artifacts/startup-marketplace");
 await mkdir(path.join(fixture, ".agents/plugins"), { recursive: true });
 const marketplace = path.join(fixture, ".agents/plugins/marketplace.json");
-await cp(path.resolve("artifacts/beta-windows"), path.join(fixture, "plugin"), {
+await cp(path.resolve("artifacts/beta"), path.join(fixture, "plugin"), {
   recursive: true,
 });
 await writeFile(
@@ -41,12 +41,9 @@ const hostEnv = {
   HOME: process.env.HOME ?? os.homedir(),
   CODEX_HOME: profile,
 };
-if (process.platform === "win32") {
-  delete hostEnv.Path;
-  hostEnv.PATH = ["System32", "System32/WindowsPowerShell/v1.0"]
-    .map((dir) => path.join(process.env.SystemRoot, dir))
-    .join(path.delimiter);
-}
+// Model a host with its bundled Node exposed as `node`, without any shell.
+delete hostEnv.Path;
+hostEnv.PATH = path.dirname(process.execPath);
 delete hostEnv.ANIMATION_NODE_BINARY;
 const child = spawn(binary, ["app-server", "--stdio"], {
   stdio: ["pipe", "pipe", "pipe"],
@@ -98,9 +95,9 @@ try {
     result.plugin.mcpServers.includes("animation-builder"),
     JSON.stringify(result.plugin.mcpServers),
   );
-  assert.equal(result.plugin.summary.localVersion, "0.7.9");
+  assert.equal(result.plugin.summary.localVersion, "0.7.10");
   console.log(
-    "PASS: Windows beta is discovered by the Codex plugin parser, version 0.7.9",
+    "PASS: Universal beta is discovered by the Codex plugin parser, version 0.7.10",
   );
   await rpc("plugin/install", {
     marketplacePath: marketplace,
@@ -118,7 +115,7 @@ try {
   assert(server && !server.toolsError, JSON.stringify(inventory));
   assert.equal(Object.keys(server.tools).length, 35);
   console.log(
-    "PASS: isolated Codex installation starts Windows plugin and discovers all 35 MCP tools",
+    "PASS: isolated Codex installation starts root plugin and discovers all 35 MCP tools",
   );
 } finally {
   for (const entry of pending.values()) clearTimeout(entry.timer);
