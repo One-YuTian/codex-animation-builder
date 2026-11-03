@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "codex-animation-builder",
+  "version": "0.7.11",
+  "description": "通过 Codex imagegen 拆图、Pixi.js 合图、关键帧和序列帧动画、视觉审查与导出。",
+  "author": {
+    "name": "Codex Animation Builder"
+  },
+  "keywords": [
+    "animation",
+    "pixi",
+    "imagegen",
+    "layers",
+    "timeline"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Codex Animation Builder",
+        "shortDescription": "拆图、合图、动画与导出",
+        "developerName": "Codex Animation Builder",
+        "category": "Productivity",
+        "capabilities": [
+          "Interactive"
+        ],
+        "defaultPrompt": "使用 Codex Animation Builder 将参考图制作成动画，先打开编辑面板。"
+      }
+    }
+  }
+}

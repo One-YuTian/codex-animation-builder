@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "animation-builder": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "${PLUGIN_ROOT}/scripts/launch-macos.sh"
+      ],
+      "cwd": "${PLUGIN_ROOT}"
+    }
+  }
+}

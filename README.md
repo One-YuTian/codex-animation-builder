@@ -1,5 +1,13 @@
 # Codex Animation Builder
 
+## 0.7.11 macOS Codex 内置 Node 启动
+
+macOS 使用专用包 `macos/`，清单通过系统 `sh` 启动 `scripts/launch-macos.sh`，仅使用 Codex 管理的 `~/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node`，不查找 PATH 中的 Node，不回退到系统 Node。缺失或版本不足时在 stderr 明确提示修复 Codex 运行时。
+
+Windows 保留 beta 根包及原有 `node run.mjs` 启动流程。macOS 安装时将市场地址设置为下载/检出后的 beta 仓库的 `macos` 本地目录；更新旧安装时先停用原根包，避免重复 MCP 服务。开发构建 `node scripts/build-beta.mjs --platform=darwin` 输出 `artifacts/beta-macos`，可通过 `codex plugin marketplace add <macos包目录>` 注册其内置市场。
+
+验证包含真实不含 Node 的 `/usr/bin:/bin` PATH、Codex 隔离安装与工具发现。0.7.10 的“统一启动”说明仅为历史记录，不能满足 GUI PATH 未包含 Node 的 Mac 环境。
+
 ## 0.7.10 统一 Node.js 启动入口
 
 Windows、macOS、Linux 都安装 beta 根目录，统一通过 `node run.mjs` 启动，不再调用 PowerShell、sh 或平台专用启动脚本，也无需选择 `windows/` 子目录。旧 windows/ 包在 beta 中保留为相同内容的兼容副本。

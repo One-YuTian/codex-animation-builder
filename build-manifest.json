@@ -1,5 +1,5 @@
 {
-  "version": "0.7.10",
+  "version": "0.7.11",
   "platform": "any",
   "runtime": "node>=20.19",
   "bundledDependencies": true

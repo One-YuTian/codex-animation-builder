@@ -1,0 +1,6 @@
+{
+  "version": "0.7.11",
+  "platform": "darwin",
+  "runtime": "node>=20.19",
+  "bundledDependencies": true
+}

@@ -1,0 +1,20 @@
+{
+  "name": "codex-animation-macos",
+  "interface": {
+    "displayName": "Codex Animation Builder macOS"
+  },
+  "plugins": [
+    {
+      "name": "codex-animation-builder",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
