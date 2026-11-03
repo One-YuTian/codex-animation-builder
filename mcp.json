@@ -3,9 +3,9 @@
   "mcpServers": {
     "animation-builder": {
       "type": "stdio",
-      "command": "sh",
+      "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/scripts/launch.sh"
+        "${PLUGIN_ROOT}/run.mjs"
       ],
       "cwd": "${PLUGIN_ROOT}"
     }

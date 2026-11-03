@@ -1,10 +1,14 @@
 # Codex Animation Builder
 
-## 0.7.9 Codex 内置 Node 优先启动
+## 0.7.10 统一 Node.js 启动入口
 
-Windows 请安装 beta 分支的 `windows/` 插件目录，启动命令为系统自带的 `powershell`，无需 Bash 或额外安装 Node。原生启动器优先使用 Codex 内置 Node（`~/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe`），不存在或版本不兼容时回退到 PATH。macOS/Linux 保留 beta 根目录的 `sh` 入口，同样优先使用 Codex 内置 Node，然后回退至 PATH、Homebrew、NVM、Volta。两种启动器均允许 `ANIMATION_NODE_BINARY` 显式覆盖，要求 Node >=20.19。
+Windows、macOS、Linux 都安装 beta 根目录，统一通过 `node run.mjs` 启动，不再调用 PowerShell、sh 或平台专用启动脚本，也无需选择 `windows/` 子目录。旧 windows/ 包在 beta 中保留为相同内容的兼容副本。
 
-Windows 启动器不修改全局执行策略，不下载运行时；`-ExecutionPolicy Bypass` 仅作用于本次进程。构建双平台包后运行 `pnpm test:startup` 和 `pnpm test:host-startup`。macOS 真机验证命令仍为 `node scripts/test-macos-startup.mjs`。
+`run.mjs` 按显式 `ANIMATION_NODE_BINARY`、宿主 `CODEX_MCP_NODE_PATH`、Codex primary runtime、当前 Node 的顺序选择 Node >=20.19。入口只使用 Node 内置模块，日志写 stderr，stdout 仅用于 MCP。
+
+注意：宿主必须先能解析 `node` 命令，JavaScript 才能执行。Codex 的 stdio 清单没有自动将内置 Node 注入 PATH 的保证；若宿主报 `program not found`，需将 Codex 内置 Node 的 bin 目录加入该宿主 PATH。不能用 JavaScript 在自身尚未运行时查找解释器。本机测试包含真实 Codex 安装与根目录插件，不再只验证 windows/ 包。
+
+验证：构建后执行 `node --test scripts/test-startup.mjs` 和 `node scripts/test-host-startup.mjs`；macOS 真机使用 `node scripts/test-macos-startup.mjs`。旧版启动说明仅作历史记录，以此节为准。
 
 ## 0.7.8 Windows 原生启动包
 
