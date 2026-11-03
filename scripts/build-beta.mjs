@@ -29,12 +29,14 @@ for (const entry of ["server", "export-worker"]) {
 }
 for (const file of [
   "plugin.json",
+  ".gitattributes",
   ".codex-plugin/plugin.json",
   "mcp.json",
   "mcp.windows.json",
   "README.md",
   "skills",
   "scripts/launch.sh",
+  "scripts/launch.ps1",
 ]) {
   await mkdir(path.dirname(path.join(out, file)), { recursive: true });
   await cp(file, path.join(out, file), { recursive: true });
@@ -71,7 +73,6 @@ await import('./server.js');
 const windows = JSON.parse(
   await readFile(path.join(out, "mcp.windows.json"), "utf8"),
 );
-windows.mcpServers["animation-builder"].args = ["${PLUGIN_ROOT}/run.mjs"];
 await writeFile(
   path.join(out, "mcp.windows.json"),
   JSON.stringify(windows, null, 2) + "\n",
@@ -82,6 +83,26 @@ if (platform === "win32") {
   await writeFile(
     path.join(out, "mcp.json"),
     JSON.stringify(windows, null, 2) + "\n",
+  );
+  await mkdir(path.join(out, ".agents/plugins"), { recursive: true });
+  await writeFile(
+    path.join(out, ".agents/plugins/marketplace.json"),
+    JSON.stringify(
+      {
+        name: "codex-animation-windows",
+        interface: { displayName: "Codex Animation Builder Windows" },
+        plugins: [
+          {
+            name: pkg.name,
+            source: { source: "local", path: "./" },
+            policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" },
+            category: "Productivity",
+          },
+        ],
+      },
+      null,
+      2,
+    ) + "\n",
   );
 }
 await writeFile(

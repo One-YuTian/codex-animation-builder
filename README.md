@@ -1,11 +1,17 @@
 # Codex Animation Builder
 
+## 0.7.9 Codex 内置 Node 优先启动
+
+Windows 请安装 beta 分支的 `windows/` 插件目录，启动命令为系统自带的 `powershell`，无需 Bash 或额外安装 Node。原生启动器优先使用 Codex 内置 Node（`~/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe`），不存在或版本不兼容时回退到 PATH。macOS/Linux 保留 beta 根目录的 `sh` 入口，同样优先使用 Codex 内置 Node，然后回退至 PATH、Homebrew、NVM、Volta。两种启动器均允许 `ANIMATION_NODE_BINARY` 显式覆盖，要求 Node >=20.19。
+
+Windows 启动器不修改全局执行策略，不下载运行时；`-ExecutionPolicy Bypass` 仅作用于本次进程。构建双平台包后运行 `pnpm test:startup` 和 `pnpm test:host-startup`。macOS 真机验证命令仍为 `node scripts/test-macos-startup.mjs`。
+
 ## 0.7.8 Windows 原生启动包
 
-默认包的 `sh` 启动命令无法在没有 Bash 的 Windows 上运行，导致 MCP 工具与 UI 面板均无法加载。现在构建独立 Windows 包，安装时已配置 `node run.mjs`，无需替换插件缓存中的配置文件。要求 Node.js >=20.19 在宿主 PATH 中可用。
+默认包的 `sh` 启动命令无法在没有 Bash 的 Windows 上运行，导致 MCP 工具与 UI 面板均无法加载。0.7.8 曾使用独立 Windows 包的 `node run.mjs`；0.7.9 已改为优先使用 Codex 内置 Node 的 PowerShell 启动器。
 
 - Windows：使用 beta 分支的 `windows/` 目录作为插件根目录；下载/打包时使用整个目录。不要把 beta 根目录的 macOS 配置用于 Windows。
-- macOS/Linux：继续使用 beta 根目录；原 `sh scripts/launch.sh`、Homebrew/Codex/NVM/Volta Node 查找逻辑保持不变。
+- macOS/Linux：继续使用 beta 根目录；保留 `sh scripts/launch.sh` 入口及 Homebrew/NVM/Volta 回退路径。
 - 开发构建：`pnpm build`，然后 `pnpm build:beta` 和 `pnpm build:beta:windows`，分别生成 `artifacts/beta`、`artifacts/beta-windows`。`node scripts/build-beta.mjs <目录> --platform=win32` 可指定 Windows 输出位置。
 - 验证：`pnpm test`；构建双平台包后执行 `pnpm test:startup`。Windows 检查使用不含 Bash 的 PATH、独立数据目录及真实浏览器；可用 `ANIMATION_TEST_BROWSER` 指定 Chrome。macOS 真机继续运行 `node scripts/test-macos-startup.mjs`。
 
@@ -29,7 +35,7 @@ macOS/Linux 默认通过 `sh scripts/launch.sh` 启动，支持 PATH、Homebrew�
 
 独立 beta 构建：`pnpm build` 后执行 `node scripts/build-beta.mjs`，产物位于 `artifacts/beta`。
 
-历史 0.7.7 及以前的 Windows 包需要手动替换 `mcp.json`；0.7.8 起请直接安装 Windows 构建包。本地开发安装脚本使用当前 Node 的绝对路径。
+历史 0.7.7 及以前的 Windows 包需要手动替换 `mcp.json`；0.7.8 起请直接安装 Windows 构建包。0.7.9 的本地开发安装脚本也使用平台启动器，优先选择 Codex 内置 Node。
 
 更新插件后重新连接或重启 Codex，旧会话无法自动替换启动失败的 MCP 连接。
 
@@ -188,7 +194,7 @@ codex plugin marketplace add "Q:\Projects\Codex Animation Builder\artifacts\loca
 codex plugin add codex-animation-builder@codex-animation-local --json
 ```
 
-本地安装清单使用裸命令 node 和插件内 scripts/local-runtime.mjs，指向当前开发目录的 dist/server.js，请保留开发目录。更新技能、工具目录或 UI 资源后，宿主可能需要重新打开插件面板或重启 Codex；正在运行的旧 MCP 连接无法由安装脚本热替换。`node scripts/diagnose-host.mjs --standalone` 用 Codex 自身解析器验证安装及工具发现；verify-local-install.mjs 验证安装缓存的启动清单。
+本地安装清单使用平台启动器和插件内 scripts/local-runtime.mjs，优先选择 Codex 内置 Node，指向当前开发目录的 dist/server.js，请保留开发目录。更新技能、工具目录或 UI 资源后，宿主可能需要重新打开插件面板或重启 Codex；正在运行的旧 MCP 连接无法由安装脚本热替换。`node scripts/diagnose-host.mjs --standalone` 用 Codex 自身解析器验证安装及工具发现；verify-local-install.mjs 验证安装缓存的启动清单。
 
 animation_open_editor 注册 global 侧栏入口和 thread 内容面板入口，仅声明 fullscreen，不声明 inline。面板位置与保持打开由宿主控制。
 

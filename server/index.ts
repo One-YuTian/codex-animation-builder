@@ -246,13 +246,27 @@ for (const [op, schema] of Object.entries(operations)) {
     },
   );
 }
-process.on("SIGINT", () => {
+let shuttingDown = false;
+function shutdown() {
+  if (shuttingDown) return;
+  shuttingDown = true;
   gateway.web.close();
   void jobs
     .close()
     .then(() => closeRenderer())
-    .then(() => process.exit());
-});
+    .then(() => process.exit())
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
+}
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
 if (process.argv.includes("--web"))
   console.error("Animation Editor: " + gateway.runtime.origin);
-else await server.connect(new StdioServerTransport());
+else {
+  // A shell launcher may survive a disconnected client unless Node also
+  // releases its HTTP listener and workers when the stdio input closes.
+  process.stdin.once("end", shutdown);
+  await server.connect(new StdioServerTransport());
+}
