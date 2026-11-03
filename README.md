@@ -1,5 +1,16 @@
 # Codex Animation Builder
 
+## 0.7.8 Windows 原生启动包
+
+默认包的 `sh` 启动命令无法在没有 Bash 的 Windows 上运行，导致 MCP 工具与 UI 面板均无法加载。现在构建独立 Windows 包，安装时已配置 `node run.mjs`，无需替换插件缓存中的配置文件。要求 Node.js >=20.19 在宿主 PATH 中可用。
+
+- Windows：使用 beta 分支的 `windows/` 目录作为插件根目录；下载/打包时使用整个目录。不要把 beta 根目录的 macOS 配置用于 Windows。
+- macOS/Linux：继续使用 beta 根目录；原 `sh scripts/launch.sh`、Homebrew/Codex/NVM/Volta Node 查找逻辑保持不变。
+- 开发构建：`pnpm build`，然后 `pnpm build:beta` 和 `pnpm build:beta:windows`，分别生成 `artifacts/beta`、`artifacts/beta-windows`。`node scripts/build-beta.mjs <目录> --platform=win32` 可指定 Windows 输出位置。
+- 验证：`pnpm test`；构建双平台包后执行 `pnpm test:startup`。Windows 检查使用不含 Bash 的 PATH、独立数据目录及真实浏览器；可用 `ANIMATION_TEST_BROWSER` 指定 Chrome。macOS 真机继续运行 `node scripts/test-macos-startup.mjs`。
+
+安装新包后重新连接插件或重启 Codex。历史项目目录及 `ANIMATION_DATA_DIR` 覆盖规则保持兼容。
+
 ## 0.7.7 导出面板层级修复
 
 时间轴建立独立堆叠上下文，防止关键帧标记越过时间轴遮挡导出弹窗。浏览器回归测试会先移除隔离以复现遮挡，再确认修复后弹窗像素不受底层标记影响。
@@ -18,7 +29,7 @@ macOS/Linux 默认通过 `sh scripts/launch.sh` 启动，支持 PATH、Homebrew�
 
 独立 beta 构建：`pnpm build` 后执行 `node scripts/build-beta.mjs`，产物位于 `artifacts/beta`。
 
-Windows 安装前将 `mcp.windows.json` 复制为 `mcp.json`（仍通过 node 启动）。本地开发安装脚本使用当前 Node 的绝对路径。
+历史 0.7.7 及以前的 Windows 包需要手动替换 `mcp.json`；0.7.8 起请直接安装 Windows 构建包。本地开发安装脚本使用当前 Node 的绝对路径。
 
 更新插件后重新连接或重启 Codex，旧会话无法自动替换启动失败的 MCP 连接。
 

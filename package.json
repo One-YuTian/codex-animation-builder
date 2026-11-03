@@ -1,6 +1,6 @@
 {
   "name": "codex-animation-builder",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.6.0",
@@ -12,7 +12,11 @@
     "check": "tsc --noEmit",
     "dev": "pnpm build && pnpm preview",
     "browser:install": "node scripts/install-browser.mjs",
-    "package": "node scripts/package.mjs"
+    "package": "node scripts/package.mjs",
+    "build:beta": "node scripts/build-beta.mjs",
+    "build:beta:windows": "node scripts/build-beta.mjs --platform=win32",
+    "test:startup": "node --test scripts/test-startup.mjs",
+    "test:host-startup": "node scripts/test-host-startup.mjs"
   },
   "dependencies": {
     "@galacean/editor-ui": "^1.2.0",
