@@ -4,12 +4,12 @@ import path from "node:path";
 // All platforms use the same Node.js entrypoint and manifest.
 const args = process.argv.slice(2);
 const platformArg = args.find((arg) => arg.startsWith("--platform="));
-const platform = platformArg?.split("=")[1] ?? "darwin";
-if (!["darwin", "linux", "win32"].includes(platform))
+const platform = platformArg?.split("=")[1] ?? "any";
+if (!["any", "darwin", "linux", "win32"].includes(platform))
   throw Error("Unsupported platform: " + platform);
 const out = path.resolve(
   args.find((arg) => !arg.startsWith("--")) ??
-    (platform === "win32" ? "artifacts/beta-windows" : "artifacts/beta"),
+    (platform === "darwin" ? "artifacts/beta-macos" : platform === "win32" ? "artifacts/beta-windows" : "artifacts/beta"),
 );
 await mkdir(out, { recursive: true });
 // Remove obsolete platform launchers when rebuilding an existing output folder.
@@ -36,6 +36,8 @@ for (const file of [
   ".codex-plugin/plugin.json",
   "mcp.json",
   "mcp.windows.json",
+  "mcp.macos.json",
+  "scripts/launch-macos.sh",
   "README.md",
   "skills",
   "run.mjs",
@@ -69,7 +71,7 @@ await writeFile(
   JSON.stringify(
     {
       version: pkg.version,
-      platform: "any",
+      platform,
       runtime: "node>=20.19",
       bundledDependencies: true,
     },
@@ -77,4 +79,14 @@ await writeFile(
     2,
   ) + "\n",
 );
+if (platform === "darwin") {
+  await cp("mcp.macos.json", path.join(out, "mcp.json"));
+  await mkdir(path.join(out, ".agents/plugins"), { recursive: true });
+  await writeFile(path.join(out, ".agents/plugins/marketplace.json"), JSON.stringify({
+    name: "codex-animation-macos",
+    interface: { displayName: "Codex Animation Builder macOS" },
+    plugins: [{ name: pkg.name, source: { source: "local", path: "./" },
+      policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" }, category: "Productivity" }]
+  }, null, 2) + "\n");
+}
 console.log(out);

@@ -1,29 +1,46 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import os from "node:os";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, cp, mkdir, writeFile, realpath } from "node:fs/promises";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 const data = await mkdtemp(path.join(os.tmpdir(), "animation-mac-"));
 const manifest = JSON.parse(
   await (
     await import("node:fs/promises")
-  ).readFile("artifacts/beta/mcp.json", "utf8"),
+  ).readFile("artifacts/beta-macos/mcp.json", "utf8"),
 );
 const config = manifest.mcpServers["animation-builder"];
-assert.equal(config.command, "node");
+assert.equal(config.command, "sh");
+// Verify the bootstrap selects the managed executable even with an external override.
+const { execFileSync, spawnSync } = await import("node:child_process");
+const fixture = await mkdtemp(path.join(os.tmpdir(), "animation managed node 空格 "));
+try {
+  await mkdir(path.join(fixture, "scripts"));
+  await cp("scripts/launch-macos.sh", path.join(fixture, "scripts/launch-macos.sh"));
+  await cp("run.mjs", path.join(fixture, "run.mjs"));
+  await writeFile(path.join(fixture, "server.js"), "console.log(JSON.stringify({node:process.execPath}));");
+  const env = { HOME: os.homedir(), PATH: "/usr/bin:/bin", ANIMATION_NODE_BINARY: "/missing/external-node" };
+  const actual = JSON.parse(execFileSync("/bin/sh", [path.join(fixture, "scripts/launch-macos.sh")], { env, encoding: "utf8" }));
+  const managed = path.join(os.homedir(), ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node");
+  assert.equal(await realpath(actual.node), await realpath(managed));
+  const missing = spawnSync("/bin/sh", [path.join(fixture, "scripts/launch-macos.sh")], { env: { ...env, HOME: fixture }, encoding: "utf8" });
+  assert.equal(missing.status, 127);
+  assert.equal(missing.stdout, "");
+  assert.match(missing.stderr, /Codex managed Node is missing/);
+} finally { await rm(fixture, {recursive:true,force:true}); }
 const client = new Client({ name: "mac-startup-test", version: "1" });
 try {
   await client.connect(
     new StdioClientTransport({
       command: config.command,
       args: config.args.map((arg) =>
-        arg.replace("${PLUGIN_ROOT}", path.resolve("artifacts/beta")),
+        arg.replace("${PLUGIN_ROOT}", path.resolve("artifacts/beta-macos")),
       ),
       cwd: "/tmp",
       env: {
         HOME: os.homedir(),
-        PATH: path.dirname(process.execPath) + ":/usr/bin:/bin",
+        PATH: "/usr/bin:/bin",
         ANIMATION_DATA_DIR: data,
       },
     }),

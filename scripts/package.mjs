@@ -7,6 +7,7 @@ const files = [
   ".gitattributes",
   "mcp.json",
   "mcp.windows.json",
+  "mcp.macos.json",
   "package.json",
   "pnpm-lock.yaml",
   "pnpm-workspace.yaml",

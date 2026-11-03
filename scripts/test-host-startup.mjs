@@ -8,7 +8,7 @@ import os from "node:os";
 const fixture = path.resolve("artifacts/startup-marketplace");
 await mkdir(path.join(fixture, ".agents/plugins"), { recursive: true });
 const marketplace = path.join(fixture, ".agents/plugins/marketplace.json");
-await cp(path.resolve("artifacts/beta"), path.join(fixture, "plugin"), {
+await cp(path.resolve(process.env.ANIMATION_TEST_PACKAGE ?? "artifacts/beta"), path.join(fixture, "plugin"), {
   recursive: true,
 });
 await writeFile(
@@ -43,7 +43,7 @@ const hostEnv = {
 };
 // Model a host with its bundled Node exposed as `node`, without any shell.
 delete hostEnv.Path;
-hostEnv.PATH = path.dirname(process.execPath);
+hostEnv.PATH = process.env.ANIMATION_TEST_MINIMAL_PATH ? "/usr/bin:/bin" : path.dirname(process.execPath);
 delete hostEnv.ANIMATION_NODE_BINARY;
 const child = spawn(binary, ["app-server", "--stdio"], {
   stdio: ["pipe", "pipe", "pipe"],
@@ -95,9 +95,9 @@ try {
     result.plugin.mcpServers.includes("animation-builder"),
     JSON.stringify(result.plugin.mcpServers),
   );
-  assert.equal(result.plugin.summary.localVersion, "0.7.10");
+  assert.equal(result.plugin.summary.localVersion, "0.7.11");
   console.log(
-    "PASS: Universal beta is discovered by the Codex plugin parser, version 0.7.10",
+    "PASS: selected beta package is discovered by Codex, version 0.7.11",
   );
   await rpc("plugin/install", {
     marketplacePath: marketplace,
@@ -115,7 +115,7 @@ try {
   assert(server && !server.toolsError, JSON.stringify(inventory));
   assert.equal(Object.keys(server.tools).length, 35);
   console.log(
-    "PASS: isolated Codex installation starts root plugin and discovers all 35 MCP tools",
+    "PASS: isolated Codex installation starts selected plugin and discovers all 35 MCP tools",
   );
 } finally {
   for (const entry of pending.values()) clearTimeout(entry.timer);

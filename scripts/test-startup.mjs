@@ -16,7 +16,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { chromium } from "playwright";
 
 const read = async (file) => JSON.parse(await readFile(file, "utf8"));
-test("all platforms install the same root Node manifest", async () => {
+test("Windows and compatibility packages preserve the root Node manifest", async () => {
   const source = await read("mcp.json");
   for (const file of [
     "mcp.windows.json",

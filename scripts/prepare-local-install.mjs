@@ -21,10 +21,11 @@ await cp(path.join(sourceRoot, "skills"), path.join(pluginRoot, "skills"), {
   recursive: true,
 });
 const mcp = JSON.parse(
-  await readFile(path.join(sourceRoot, "mcp.json"), "utf8"),
+  await readFile(path.join(sourceRoot, process.platform === "darwin" ? "mcp.macos.json" : "mcp.json"), "utf8"),
 );
 await mkdir(path.join(pluginRoot, "scripts"), { recursive: true });
 await cp(path.join(sourceRoot, "run.mjs"), path.join(pluginRoot, "run.mjs"));
+await cp(path.join(sourceRoot, "scripts/launch-macos.sh"), path.join(pluginRoot, "scripts/launch-macos.sh"));
 await mkdir(path.join(pluginRoot, "dist"), { recursive: true });
 await writeFile(
   path.join(pluginRoot, "dist/server.js"),
