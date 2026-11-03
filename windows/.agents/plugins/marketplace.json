@@ -1,0 +1,20 @@
+{
+  "name": "codex-animation-windows",
+  "interface": {
+    "displayName": "Codex Animation Builder Windows"
+  },
+  "plugins": [
+    {
+      "name": "codex-animation-builder",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

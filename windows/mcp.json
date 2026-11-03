@@ -3,9 +3,15 @@
   "mcpServers": {
     "animation-builder": {
       "type": "stdio",
-      "command": "node",
+      "command": "powershell",
       "args": [
-        "${PLUGIN_ROOT}/run.mjs"
+        "-NoLogo",
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${PLUGIN_ROOT}/scripts/launch.ps1"
       ],
       "cwd": "${PLUGIN_ROOT}"
     }

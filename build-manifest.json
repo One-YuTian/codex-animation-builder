@@ -1,5 +1,5 @@
 {
-  "version": "0.7.8",
+  "version": "0.7.9",
   "platform": "darwin",
   "runtime": "node>=20.19",
   "bundledDependencies": true

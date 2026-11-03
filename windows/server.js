@@ -31788,10 +31788,21 @@ for (const [op, schema] of Object.entries(operations)) {
     }
   );
 }
-process.on("SIGINT", () => {
+var shuttingDown = false;
+function shutdown() {
+  if (shuttingDown) return;
+  shuttingDown = true;
   gateway.web.close();
-  void jobs.close().then(() => closeRenderer()).then(() => process.exit());
-});
+  void jobs.close().then(() => closeRenderer()).then(() => process.exit()).catch((error40) => {
+    console.error(error40);
+    process.exit(1);
+  });
+}
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
 if (process.argv.includes("--web"))
   console.error("Animation Editor: " + gateway.runtime.origin);
-else await server.connect(new StdioServerTransport());
+else {
+  process.stdin.once("end", shutdown);
+  await server.connect(new StdioServerTransport());
+}

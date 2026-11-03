@@ -6,8 +6,9 @@ compatible() {
   [ -x "$1" ] && "$1" -e 'const [a,b]=process.versions.node.split(".").map(Number);process.exit(a>20||(a===20&&b>=19)?0:1)' >/dev/null 2>&1
 }
 node_path=$(command -v node || true)
-for candidate in "${ANIMATION_NODE_BINARY:-}" "$node_path" /opt/homebrew/bin/node /usr/local/bin/node \
+for candidate in "${ANIMATION_NODE_BINARY:-}" \
   "${HOME:-}/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node" \
+  "$node_path" /opt/homebrew/bin/node /usr/local/bin/node \
   "${HOME:-}"/.nvm/versions/node/*/bin/node "${HOME:-}"/.volta/bin/node; do
   if compatible "$candidate"; then
     if [ -f "$root/run.mjs" ]; then

@@ -1,0 +1,2 @@
+# POSIX launchers must also remain runnable when packaged on Windows.
+*.sh text eol=lf
