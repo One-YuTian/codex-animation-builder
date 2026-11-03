@@ -1,0 +1,19 @@
+{
+  "name": "codex-animation-builder",
+  "version": "0.7.8",
+  "description": "拆图、合图、动画与导出",
+  "author": {
+    "name": "Codex Animation Builder"
+  },
+  "skills": "./skills/",
+  "mcpServers": "./mcp.json",
+  "interface": {
+    "displayName": "Codex Animation Builder",
+    "shortDescription": "拆图、合图、动画与导出",
+    "developerName": "Codex Animation Builder",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive"
+    ]
+  }
+}

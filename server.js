@@ -29425,7 +29425,7 @@ var StdioServerTransport = class {
   }
 };
 
-// node_modules/.pnpm/@modelcontextprotocol+ext-apps@1.7.5_@modelcontextprotocol+sdk@1.32.2_zod@3.25.76__reac_c61fe5ca038c925925cfe83dac7e9476/node_modules/@modelcontextprotocol/ext-apps/dist/src/server/index.js
+// node_modules/.pnpm/@modelcontextprotocol+ext-a_c61fe5ca038c925925cfe83dac7e9476/node_modules/@modelcontextprotocol/ext-apps/dist/src/server/index.js
 init_v4();
 var r = ((Z) => typeof __require < "u" ? __require : typeof Proxy < "u" ? new Proxy(Z, { get: ($, J) => (typeof __require < "u" ? __require : $)[J] }) : Z)(function(Z) {
   if (typeof __require < "u") return __require.apply(this, arguments);
